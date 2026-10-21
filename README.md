@@ -34,24 +34,31 @@ pass_it_on/
 ├── frontend/                     # React + Vite frontend application
 │   ├── public/                   # Static assets, SVG icons, and images
 │   ├── src/
-│   │   ├── components/           # Modular view components
-│   │   │   ├── Navbar.jsx        # Glassmorphic top navigation & search
-│   │   │   ├── HomeView.jsx      # Marketplace catalog & categories
-│   │   │   ├── ItemDetailView.jsx# Calendar picker & overlap guard
-│   │   │   ├── BookingLifecycleView.jsx # 9-step booking & escrow simulator
-│   │   │   ├── AdminView.jsx     # Moderator panel & conflict logs
-│   │   │   ├── AuthView.jsx      # Login / Register with role selector
-│   │   │   └── Footer.jsx        # Responsive footer & links
+│   │   ├── components/           # Reusable UI & Structural Components
+│   │   │   ├── layout/           # App-wide structural layout (Navbar, Footer)
+│   │   │   │   ├── Navbar.jsx
+│   │   │   │   ├── Footer.jsx
+│   │   │   │   └── index.js
+│   │   │   └── common/           # Shared reusable atomic UI widgets
+│   │   │       ├── Badge.jsx
+│   │   │       └── index.js
+│   │   ├── pages/                # Top-level route/page views
+│   │   │   ├── HomePage.jsx
+│   │   │   ├── ItemDetailPage.jsx
+│   │   │   ├── BookingLifecyclePage.jsx
+│   │   │   ├── AdminPage.jsx
+│   │   │   ├── AuthPage.jsx
+│   │   │   └── index.js
 │   │   ├── data/
 │   │   │   └── mockData.js       # Preloaded listings, bookings, and logs
-│   │   ├── App.jsx               # Screen router & state container
-│   │   ├── App.css               # Claymorphism & component styles
+│   │   ├── App.jsx               # Application router & root shell
+│   │   ├── App.css               # Claymorphic & component styles
 │   │   ├── index.css             # Design tokens, variables & typography
 │   │   └── main.jsx              # React DOM entry point
 │   ├── package.json              # Frontend dependencies (React 19, Vite, Lucide)
 │   └── vite.config.js            # Vite bundler configuration
-├── package.json                  # Root runner scripts
-├── .gitignore                    # Git exclusions
+├── package.json                  # Root runner scripts (--prefix frontend)
+├── .gitignore                    # Root Git exclusions
 └── README.md                     # Project documentation
 ```
 

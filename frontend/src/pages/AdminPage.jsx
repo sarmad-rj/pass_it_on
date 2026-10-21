@@ -11,18 +11,18 @@ import {
   FileText, 
   ArrowUpRight, 
   Clock, 
-  Search,
-  Filter,
-  Check,
-  X,
-  ExternalLink,
-  ChevronRight,
-  Sparkles,
-  RefreshCw
+  Search, 
+  Filter, 
+  Check, 
+  X, 
+  ExternalLink, 
+  ChevronRight, 
+  Sparkles, 
+  RefreshCw 
 } from 'lucide-react';
 import { ADMIN_STATS, DISPUTES, OVERLAP_MONITOR_LOGS, LISTINGS } from '../data/mockData';
 
-export default function AdminView({ setActiveScreen }) {
+export default function AdminPage({ setActiveScreen }) {
   const [activeTab, setActiveTab] = useState('disputes'); // disputes, logs, listings
   const [disputesList, setDisputesList] = useState(DISPUTES);
   const [selectedDispute, setSelectedDispute] = useState(DISPUTES[0]);

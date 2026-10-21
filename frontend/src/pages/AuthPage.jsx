@@ -8,12 +8,12 @@ import {
   Eye, 
   EyeOff, 
   CheckCircle2, 
-  Sparkles,
-  KeyRound,
-  ShieldAlert
+  Sparkles, 
+  KeyRound, 
+  ShieldAlert 
 } from 'lucide-react';
 
-export default function AuthView({ setActiveScreen, setRole }) {
+export default function AuthPage({ setActiveScreen, setRole }) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [selectedRole, setSelectedRole] = useState('both'); // borrower, lender, both, admin
   const [showPassword, setShowPassword] = useState(false);

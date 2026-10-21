@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { LISTINGS } from '../data/mockData';
 
-export default function BookingLifecycleView({ setActiveScreen }) {
+export default function BookingLifecyclePage({ setActiveScreen }) {
   const item = LISTINGS[0]; // Sony Alpha A7 IV
 
   // Interactive current step in the 9-state lifecycle

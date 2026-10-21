@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { LISTINGS } from '../data/mockData';
 
-export default function ItemDetailView({ setActiveScreen, selectedListingId }) {
+export default function ItemDetailPage({ setActiveScreen, selectedListingId }) {
   const listing = LISTINGS.find(item => item.id === selectedListingId) || LISTINGS[0];
 
   // Calendar State for October 2026

@@ -14,7 +14,7 @@ import {
   Compass, 
   ArrowRight 
 } from 'lucide-react';
-import { CURRENT_USER } from '../data/mockData';
+import { CURRENT_USER } from '../../data/mockData';
 
 export default function Navbar({ activeScreen, setActiveScreen, role, setRole }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

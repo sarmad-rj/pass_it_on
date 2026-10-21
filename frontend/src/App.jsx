@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import HomeView from './components/HomeView';
-import AuthView from './components/AuthView';
-import AdminView from './components/AdminView';
-import ItemDetailView from './components/ItemDetailView';
-import BookingLifecycleView from './components/BookingLifecycleView';
+import { Navbar, Footer } from './components/layout';
+import { 
+  HomePage, 
+  AuthPage, 
+  AdminPage, 
+  ItemDetailPage, 
+  BookingLifecyclePage 
+} from './pages';
 import './App.css';
 
 function App() {
@@ -27,34 +28,34 @@ function App() {
       {/* Main Viewport Content based on activeScreen */}
       <main className="main-content">
         {activeScreen === 'home' && (
-          <HomeView 
+          <HomePage 
             setActiveScreen={setActiveScreen}
             setSelectedListingId={setSelectedListingId}
           />
         )}
 
         {activeScreen === 'auth' && (
-          <AuthView 
+          <AuthPage 
             setActiveScreen={setActiveScreen}
             setRole={setUserRole}
           />
         )}
 
         {activeScreen === 'admin' && (
-          <AdminView 
+          <AdminPage 
             setActiveScreen={setActiveScreen}
           />
         )}
 
         {activeScreen === 'item-detail' && (
-          <ItemDetailView 
+          <ItemDetailPage 
             setActiveScreen={setActiveScreen}
             selectedListingId={selectedListingId}
           />
         )}
 
         {activeScreen === 'booking-lifecycle' && (
-          <BookingLifecycleView 
+          <BookingLifecyclePage 
             setActiveScreen={setActiveScreen}
           />
         )}

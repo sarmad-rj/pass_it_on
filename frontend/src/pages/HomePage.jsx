@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { LISTINGS, CATEGORIES } from '../data/mockData';
 
-export default function HomeView({ setActiveScreen, setSelectedListingId }) {
+export default function HomePage({ setActiveScreen, setSelectedListingId }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [favorites, setFavorites] = useState({});
 
