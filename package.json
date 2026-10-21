@@ -1,0 +1,19 @@
+{
+  "name": "pass-it-on",
+  "version": "1.0.0",
+  "description": "Pass It On — Semester Web Project (MERN Stack). Community Peer-to-Peer Rental Platform with Guaranteed Conflict-Free Calendar.",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview"
+  },
+  "keywords": [
+    "pass-it-on",
+    "mern",
+    "glassmorphism",
+    "neumorphism",
+    "claymorphism"
+  ],
+  "author": "Sarmad Rj",
+  "license": "ISC"
+}
