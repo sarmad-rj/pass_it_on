@@ -3,27 +3,39 @@ import {
   ShieldCheck, 
   Search, 
   PlusCircle, 
-  Bell, 
   User, 
-  Sparkles, 
   LayoutDashboard, 
   CalendarCheck, 
   ChevronDown, 
   Menu, 
   X, 
   Compass, 
-  ArrowRight 
+  ArrowRight,
+  UserPlus,
+  LogIn
 } from 'lucide-react';
 import { CURRENT_USER } from '../../data/mockData';
 
-export default function Navbar({ activeScreen, setActiveScreen, role, setRole }) {
+export default function Navbar({ activeScreen, setActiveScreen, _role, _setRole, onOpenAddModal, onNavigateAuth }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
   const navigateTo = (screen) => {
     setActiveScreen(screen);
     setMobileMenuOpen(false);
     setMobileSearchOpen(false);
+    setProfileDropdownOpen(false);
+  };
+
+  const handleAuthClick = (isSignUp = false) => {
+    if (onNavigateAuth) {
+      onNavigateAuth(isSignUp);
+    } else {
+      setActiveScreen('auth');
+    }
+    setMobileMenuOpen(false);
+    setProfileDropdownOpen(false);
   };
 
   return (
@@ -70,6 +82,14 @@ export default function Navbar({ activeScreen, setActiveScreen, role, setRole })
           >
             Explore
           </button>
+
+          <button 
+            className={`nav-link-btn ${activeScreen === 'dashboard' ? 'active' : ''}`}
+            onClick={() => navigateTo('dashboard')}
+          >
+            <User size={15} />
+            <span>Dashboard</span>
+          </button>
           
           <button 
             className={`nav-link-btn ${activeScreen === 'item-detail' ? 'active' : ''}`}
@@ -96,33 +116,85 @@ export default function Navbar({ activeScreen, setActiveScreen, role, setRole })
             <span className="admin-chip-pulse">3</span>
           </button>
 
+          <button 
+            className={`nav-link-btn auth-nav-link ${activeScreen === 'auth' ? 'active' : ''}`}
+            onClick={() => handleAuthClick(true)}
+            title="Create a new community account"
+          >
+            <UserPlus size={15} />
+            <span>Sign Up</span>
+          </button>
+
           {/* List an Item (Claymorphic CTA) */}
           <button 
             className="clay-button-primary list-item-cta"
             onClick={() => {
-              alert('Listing Creator: Lenders can upload photos, set daily price, mock deposit, and block maintenance days without conflict!');
+              if (onOpenAddModal) onOpenAddModal();
+              else navigateTo('dashboard');
             }}
           >
             <PlusCircle size={16} />
             <span>List Item</span>
           </button>
 
-          {/* User Profile / Auth Toggle */}
-          <div 
-            className="user-profile-neu neu-sunken"
-            onClick={() => navigateTo('auth')}
-            title="Click to view Login / Profile Screen"
-          >
-            <img 
-              src={CURRENT_USER.avatar} 
-              alt={CURRENT_USER.name} 
-              className="user-avatar"
-            />
-            <div className="user-info-text">
-              <span className="user-name">{CURRENT_USER.name}</span>
-              <span className="user-role-badge">★ 4.95</span>
+          {/* User Profile / Account Menu with Dropdown */}
+          <div className="user-profile-menu-container">
+            <div 
+              className={`user-profile-neu neu-sunken ${profileDropdownOpen ? 'active' : ''}`}
+              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              title="Click to view Account Menu"
+              style={{ cursor: 'pointer' }}
+            >
+              <img 
+                src={CURRENT_USER.avatar} 
+                alt={CURRENT_USER.name} 
+                className="user-avatar"
+              />
+              <div className="user-info-text">
+                <span className="user-name">{CURRENT_USER.name}</span>
+                <span className="user-role-badge">★ 4.95</span>
+              </div>
+              <ChevronDown size={13} className={`chevron-icon ${profileDropdownOpen ? 'rotate-180' : ''}`} />
             </div>
-            <ChevronDown size={13} className="chevron-icon" />
+
+            {profileDropdownOpen && (
+              <div className="profile-dropdown-menu glass-panel animate-float">
+                <div className="dropdown-user-header">
+                  <strong>{CURRENT_USER.name}</strong>
+                  <span>{CURRENT_USER.email}</span>
+                </div>
+                <div className="dropdown-divider"></div>
+                <button 
+                  className="dropdown-item"
+                  onClick={() => navigateTo('dashboard')}
+                >
+                  <User size={15} className="text-indigo" />
+                  <span>My Dashboard</span>
+                </button>
+                <button 
+                  className="dropdown-item"
+                  onClick={() => handleAuthClick(true)}
+                >
+                  <UserPlus size={15} className="text-emerald" />
+                  <span>Create Account (Sign Up)</span>
+                </button>
+                <button 
+                  className="dropdown-item"
+                  onClick={() => handleAuthClick(false)}
+                >
+                  <LogIn size={15} className="text-amber" />
+                  <span>Sign In (Existing Account)</span>
+                </button>
+                <div className="dropdown-divider"></div>
+                <button 
+                  className="dropdown-item"
+                  onClick={() => navigateTo('admin')}
+                >
+                  <LayoutDashboard size={15} className="text-rose" />
+                  <span>Admin Moderation Hub</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -139,8 +211,11 @@ export default function Navbar({ activeScreen, setActiveScreen, role, setRole })
 
           <button 
             className="clay-button-primary mobile-quick-list"
-            onClick={() => navigateTo('item-detail')}
-            title="Browse or List"
+            onClick={() => {
+              if (onOpenAddModal) onOpenAddModal();
+              else navigateTo('dashboard');
+            }}
+            title="List Item"
           >
             <PlusCircle size={15} />
             <span>List</span>
@@ -183,7 +258,8 @@ export default function Navbar({ activeScreen, setActiveScreen, role, setRole })
           {/* User Profile Mini Banner */}
           <div 
             className="mobile-drawer-user clay-card"
-            onClick={() => navigateTo('auth')}
+            onClick={() => navigateTo('dashboard')}
+            style={{ cursor: 'pointer' }}
           >
             <img 
               src={CURRENT_USER.avatar} 
@@ -195,7 +271,7 @@ export default function Navbar({ activeScreen, setActiveScreen, role, setRole })
               <span className="drawer-user-sub">Lender & Borrower • ★ 4.95</span>
             </div>
             <span className="clay-badge-emerald drawer-login-pill">
-              Account
+              Dashboard
             </span>
           </div>
 
@@ -210,6 +286,17 @@ export default function Navbar({ activeScreen, setActiveScreen, role, setRole })
                 <span>Explore Marketplace</span>
               </div>
               <ArrowRight size={15} className="drawer-arrow" />
+            </button>
+
+            <button 
+              className={`drawer-link-item ${activeScreen === 'dashboard' ? 'active-link' : ''}`}
+              onClick={() => navigateTo('dashboard')}
+            >
+              <div className="drawer-link-left">
+                <User size={18} className="text-indigo" />
+                <span>My Dashboard (Listings & Borrows)</span>
+              </div>
+              <span className="clay-badge-emerald drawer-mini-badge">My Gear</span>
             </button>
 
             <button 
@@ -247,11 +334,22 @@ export default function Navbar({ activeScreen, setActiveScreen, role, setRole })
 
             <button 
               className={`drawer-link-item ${activeScreen === 'auth' ? 'active-link' : ''}`}
-              onClick={() => navigateTo('auth')}
+              onClick={() => handleAuthClick(true)}
             >
               <div className="drawer-link-left">
-                <User size={18} className="text-indigo" />
-                <span>Login / Sign Up</span>
+                <UserPlus size={18} className="text-emerald" />
+                <span>Create Account (Sign Up)</span>
+              </div>
+              <span className="clay-badge-emerald drawer-mini-badge">Join Free</span>
+            </button>
+
+            <button 
+              className={`drawer-link-item ${activeScreen === 'auth' ? 'active-link' : ''}`}
+              onClick={() => handleAuthClick(false)}
+            >
+              <div className="drawer-link-left">
+                <LogIn size={18} className="text-indigo" />
+                <span>Sign In (Login)</span>
               </div>
               <ArrowRight size={15} className="drawer-arrow" />
             </button>
@@ -262,8 +360,9 @@ export default function Navbar({ activeScreen, setActiveScreen, role, setRole })
             <button 
               className="clay-button-primary drawer-list-cta"
               onClick={() => {
-                alert('Listing Creator: Lenders can upload photos, set daily price, mock deposit, and block maintenance days!');
                 setMobileMenuOpen(false);
+                if (onOpenAddModal) onOpenAddModal();
+                else navigateTo('dashboard');
               }}
             >
               <PlusCircle size={18} />

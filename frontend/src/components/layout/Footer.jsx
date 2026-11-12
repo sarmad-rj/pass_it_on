@@ -2,11 +2,6 @@ import React from 'react';
 import { 
   ShieldCheck, 
   MapPin, 
-  Heart, 
-  Calendar, 
-  Lock, 
-  ArrowRight,
-  ExternalLink
 } from 'lucide-react';
 
 export default function Footer({ setActiveScreen }) {

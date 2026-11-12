@@ -15,16 +15,28 @@ import {
   Lock,
   ArrowLeft
 } from 'lucide-react';
-import { LISTINGS } from '../data/mockData';
+import { LISTINGS, CURRENT_USER } from '../data/mockData';
 
-export default function BookingLifecyclePage({ setActiveScreen }) {
-  const item = LISTINGS[0]; // Sony Alpha A7 IV
+export default function BookingLifecyclePage({ setActiveScreen, activeBooking }) {
+  const item = activeBooking ? {
+    id: activeBooking.itemId || 'item_1',
+    title: activeBooking.itemTitle || LISTINGS[0].title,
+    depositAmount: activeBooking.depositHeld || LISTINGS[0].depositAmount,
+    image: activeBooking.image || LISTINGS[0].image,
+    category: activeBooking.category || LISTINGS[0].category,
+    owner: {
+      name: activeBooking.lenderName || LISTINGS[0].owner.name,
+      avatar: activeBooking.lenderAvatar || LISTINGS[0].owner.avatar
+    }
+  } : LISTINGS[0];
+
+  const bookingCode = activeBooking ? activeBooking.id : 'BK-1082';
 
   // Interactive current step in the 9-state lifecycle
   // 1: Requested, 2: Accepted, 3: Deposit Held, 4: Handover Confirmed, 5: In Use, 6: Returned, 7: Deposit Released
-  const [currentStep, setCurrentStep] = useState(3);
+  const [currentStep, setCurrentStep] = useState(activeBooking?.lifecycleStep || 3);
   const [rating, setRating] = useState(5);
-  const [reviewNote, setReviewNote] = useState('Camera was in pristine condition, battery fully charged, lenses spotless. Handover was on time at COMSATS campus!');
+  const [reviewNote, setReviewNote] = useState('Equipment was in pristine condition, battery fully charged, accessories spotless. Handover was on time at COMSATS campus!');
   const [disputeModalOpen, setDisputeModalOpen] = useState(false);
   const [disputeReported, setDisputeReported] = useState(false);
 
@@ -53,7 +65,7 @@ export default function BookingLifecyclePage({ setActiveScreen }) {
           <div>
             <div className="lifecycle-title-row">
               <h2>Booking Lifecycle & Mock Escrow</h2>
-              <span className="clay-badge-emerald">Active Booking #BK-1082</span>
+              <span className="clay-badge-emerald">Active Booking #{bookingCode}</span>
             </div>
             <p className="lifecycle-sub">
               Demonstrating the 9-state lifecycle and tamper-proof deposit tracking from the Pass It On brief.
@@ -111,11 +123,11 @@ export default function BookingLifecyclePage({ setActiveScreen }) {
           <div className="booking-item-header">
             <img src={item.image} alt={item.title} className="summary-thumb" />
             <div className="summary-info">
-              <span className="summary-id font-mono">BOOKING #BK-1082</span>
+              <span className="summary-id font-mono">BOOKING #{bookingCode}</span>
               <h3>{item.title}</h3>
               <p className="summary-dates">
                 <Calendar size={14} />
-                <span>Oct 22, 2026 — Oct 25, 2026 (4 days)</span>
+                <span>{activeBooking?.dates || 'Oct 22, 2026 — Oct 25, 2026 (4 days)'}</span>
               </p>
             </div>
           </div>
@@ -124,13 +136,13 @@ export default function BookingLifecyclePage({ setActiveScreen }) {
             <div className="p-party">
               <span className="p-label">Lender:</span>
               <strong>{item.owner.name}</strong>
-              <span className="p-sub">Sector H-8 / COMSATS</span>
+              <span className="p-sub">{item.location || 'Sector H-8 / COMSATS'}</span>
             </div>
             <div className="p-divider"></div>
             <div className="p-party">
               <span className="p-label">Borrower:</span>
-              <strong>Hamza Tariq</strong>
-              <span className="p-sub">Verified Student #FA23-BCS-041</span>
+              <strong>{activeBooking?.borrower || CURRENT_USER.name}</strong>
+              <span className="p-sub">{activeBooking?.borrowerSub || 'Verified Member #FA23-BCS-041'}</span>
             </div>
           </div>
 
@@ -145,12 +157,12 @@ export default function BookingLifecyclePage({ setActiveScreen }) {
             </h4>
             <p className="state-explanation">
               {currentStep === 1 && "Request submitted by borrower. Dates are temporarily marked pending."}
-              {currentStep === 2 && "Lender accepted request! The 3-layer overlap guard has locked Oct 22-25 exclusively."}
-              {currentStep === 3 && "Mock deposit of $300.00 is held safely in escrow. No real money moves."}
-              {currentStep === 4 && "Borrower met lender at COMSATS campus and inspected the camera condition."}
-              {currentStep === 5 && "Item is currently in use for university semester media production."}
-              {currentStep === 6 && "Camera returned safely to lender with lens and accessories verified intact."}
-              {currentStep === 7 && "Clean return verified! Mock escrow deposit of $300.00 released back to borrower."}
+              {currentStep === 2 && "Lender accepted request! The 3-layer overlap guard has locked dates exclusively."}
+              {currentStep === 3 && `Mock deposit of $${item.depositAmount}.00 is held safely in escrow. No real money moves.`}
+              {currentStep === 4 && "Borrower met lender at campus and inspected the equipment condition."}
+              {currentStep === 5 && "Item is currently in use for university semester academic work."}
+              {currentStep === 6 && "Item returned safely to lender with accessories verified intact."}
+              {currentStep === 7 && `Clean return verified! Mock escrow deposit of $${item.depositAmount}.00 released back to borrower.`}
             </p>
           </div>
 

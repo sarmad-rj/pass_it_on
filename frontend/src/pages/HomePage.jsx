@@ -3,28 +3,22 @@ import {
   ShieldCheck, 
   Sparkles, 
   Calendar, 
-  Lock, 
-  MapPin, 
-  Star, 
-  CheckCircle2, 
+  MapPin,
   Clock, 
-  ArrowRight,
-  Filter,
-  DollarSign,
+  Star, 
   Heart,
-  Layers,
   Cpu,
   Database
 } from 'lucide-react';
 import { LISTINGS, CATEGORIES } from '../data/mockData';
 
-export default function HomePage({ setActiveScreen, setSelectedListingId }) {
+export default function HomePage({ setActiveScreen, setSelectedListingId, listings = LISTINGS }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [favorites, setFavorites] = useState({});
 
   const filteredListings = selectedCategory === 'all' 
-    ? LISTINGS 
-    : LISTINGS.filter(item => {
+    ? listings 
+    : listings.filter(item => {
         if (selectedCategory === 'tools') return item.category.includes('Tools');
         if (selectedCategory === 'cameras') return item.category.includes('Cameras');
         if (selectedCategory === 'outdoor') return item.category.includes('Outdoor');

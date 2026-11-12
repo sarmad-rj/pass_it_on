@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Sparkles, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export function ShieldBadge({ text = "Zero Double-Booking Guarantee", variant = "emerald" }) {
   const variantClass = variant === 'emerald' ? 'clay-badge-emerald' : 'clay-badge-amber';

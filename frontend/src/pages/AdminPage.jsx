@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  ShieldCheck, 
   ShieldAlert, 
   Users, 
   Layers, 
@@ -8,21 +7,15 @@ import {
   CheckCircle2, 
   AlertTriangle, 
   Activity, 
-  FileText, 
-  ArrowUpRight, 
-  Clock, 
-  Search, 
-  Filter, 
   Check, 
-  X, 
-  ExternalLink, 
   ChevronRight, 
   Sparkles, 
-  RefreshCw 
+  RefreshCw,
+  Trash2
 } from 'lucide-react';
 import { ADMIN_STATS, DISPUTES, OVERLAP_MONITOR_LOGS, LISTINGS } from '../data/mockData';
 
-export default function AdminPage({ setActiveScreen }) {
+export default function AdminPage({ setActiveScreen, listings = LISTINGS, onRemoveListing }) {
   const [activeTab, setActiveTab] = useState('disputes'); // disputes, logs, listings
   const [disputesList, setDisputesList] = useState(DISPUTES);
   const [selectedDispute, setSelectedDispute] = useState(DISPUTES[0]);
@@ -175,7 +168,7 @@ export default function AdminPage({ setActiveScreen }) {
           onClick={() => setActiveTab('listings')}
         >
           <Layers size={16} />
-          <span>Listings Moderation ({LISTINGS.length})</span>
+          <span>Listings Moderation ({listings.length})</span>
         </button>
       </div>
 
@@ -377,7 +370,7 @@ export default function AdminPage({ setActiveScreen }) {
           </div>
 
           <div className="mod-listings-grid">
-            {LISTINGS.map(item => (
+            {listings.map(item => (
               <div key={item.id} className="mod-listing-card clay-card">
                 <div className="mod-card-top">
                   <img src={item.image} alt={item.title} className="mod-thumb" />
@@ -405,6 +398,21 @@ export default function AdminPage({ setActiveScreen }) {
                     <span>View Calendar</span>
                     <ChevronRight size={14} />
                   </button>
+                  {onRemoveListing && (
+                    <button 
+                      className="clay-badge-rose remove-listing-mod-btn"
+                      onClick={() => {
+                        if (window.confirm(`Admin action: Delist and remove "${item.title}"?`)) {
+                          onRemoveListing(item.id);
+                        }
+                      }}
+                      title="Admin removal of listing"
+                      style={{ padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <Trash2 size={13} />
+                      <span>Remove</span>
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

@@ -2,47 +2,73 @@ import React, { useState } from 'react';
 import { 
   ShieldCheck, 
   Calendar, 
-  DollarSign, 
   Star, 
   MapPin, 
   Clock, 
   CheckCircle2, 
   AlertTriangle, 
   Info, 
-  ArrowLeft,
-  ChevronLeft,
-  ChevronRight,
-  Sparkles,
-  Lock,
-  Share2,
-  Heart
+  ArrowLeft
 } from 'lucide-react';
-import { LISTINGS } from '../data/mockData';
+import { LISTINGS, CURRENT_USER } from '../data/mockData';
 
-export default function ItemDetailPage({ setActiveScreen, selectedListingId }) {
-  const listing = LISTINGS.find(item => item.id === selectedListingId) || LISTINGS[0];
+export default function ItemDetailPage({ 
+  setActiveScreen, 
+  selectedListingId, 
+  listings = LISTINGS, 
+  onBorrowItem, 
+  setActiveBooking 
+}) {
+  const listing = listings.find(item => item.id === selectedListingId) || listings[0];
 
   // Calendar State for October 2026
   const [selectedRange, setSelectedRange] = useState({ start: 18, end: 20 });
   const [conflictDetected, setConflictDetected] = useState(false);
   const [conflictDetails, setConflictDetails] = useState(null);
 
-  // October 2026 days configuration (31 days)
-  // Booked: 22, 23, 24, 25 (Hamza Tariq)
-  // Blocked: 29, 30 (Lender calibration)
-  const bookedDays = [22, 23, 24, 25];
-  const blockedDays = [29, 30];
+  // October 2026 dynamic booked & blocked days calculation
+  const bookedDays = listing.bookedRanges && listing.bookedRanges.length > 0 
+    ? listing.bookedRanges.flatMap(r => {
+        const s = parseInt(r.start.split('-')[2], 10);
+        const e = parseInt(r.end.split('-')[2], 10);
+        const days = [];
+        for (let d = s; d <= e; d++) days.push(d);
+        return days;
+      })
+    : [22, 23, 24, 25];
+
+  const blockedDays = listing.blockedRanges && listing.blockedRanges.length > 0
+    ? listing.blockedRanges.flatMap(r => {
+        const s = parseInt(r.start.split('-')[2], 10);
+        const e = parseInt(r.end.split('-')[2], 10);
+        const days = [];
+        for (let d = s; d <= e; d++) days.push(d);
+        return days;
+      })
+    : [29, 30];
 
   const handleDayClick = (day) => {
     // If user clicks a booked or blocked day directly
     if (bookedDays.includes(day)) {
       setConflictDetected(true);
-      setConflictDetails(`October ${day} is already booked by Hamza Tariq (BK-1082). Overlap Guard prevents overlapping reservations!`);
+      const matchingRange = listing.bookedRanges?.find(r => {
+        const s = parseInt(r.start.split('-')[2], 10);
+        const e = parseInt(r.end.split('-')[2], 10);
+        return day >= s && day <= e;
+      });
+      const borrowerInfo = matchingRange ? `${matchingRange.borrower} (${matchingRange.bookingId})` : 'another student';
+      setConflictDetails(`October ${day} is already booked by ${borrowerInfo}. Overlap Guard prevents overlapping reservations!`);
       return;
     }
     if (blockedDays.includes(day)) {
       setConflictDetected(true);
-      setConflictDetails(`October ${day} is blocked by lender for lens maintenance and calibration.`);
+      const matchingBlocked = listing.blockedRanges?.find(r => {
+        const s = parseInt(r.start.split('-')[2], 10);
+        const e = parseInt(r.end.split('-')[2], 10);
+        return day >= s && day <= e;
+      });
+      const reason = matchingBlocked?.reason || 'lender maintenance and calibration';
+      setConflictDetails(`October ${day} is blocked by lender (${reason}).`);
       return;
     }
 
@@ -61,11 +87,23 @@ export default function ItemDetailPage({ setActiveScreen, selectedListingId }) {
 
       if (hasConflict) {
         setConflictDetected(true);
-        setConflictDetails(`Requested range (Oct ${start} - Oct ${end}) intersects an existing booking (Oct 22 - Oct 25). Double-booking rule: A.start < B.end AND B.start < A.end triggered!`);
+        const conflictRange = listing.bookedRanges?.find(r => {
+          const s = parseInt(r.start.split('-')[2], 10);
+          const e = parseInt(r.end.split('-')[2], 10);
+          return Math.max(start, s) <= Math.min(end, e);
+        });
+        const conflictDesc = conflictRange ? `an existing booking by ${conflictRange.borrower} (${conflictRange.bookingId})` : 'an existing booking';
+        setConflictDetails(`Requested range (Oct ${start} - Oct ${end}) intersects ${conflictDesc}. Double-booking rule: A.start < B.end AND B.start < A.end triggered!`);
         setSelectedRange({ start, end });
       } else if (hasBlocked) {
         setConflictDetected(true);
-        setConflictDetails(`Requested range intersects lender maintenance blackout dates (Oct 29 - Oct 30).`);
+        const blockedRange = listing.blockedRanges?.find(r => {
+          const s = parseInt(r.start.split('-')[2], 10);
+          const e = parseInt(r.end.split('-')[2], 10);
+          return Math.max(start, s) <= Math.min(end, e);
+        });
+        const blockReason = blockedRange ? `blackout dates: ${blockedRange.reason}` : 'lender maintenance blackout dates';
+        setConflictDetails(`Requested range intersects ${blockReason}.`);
         setSelectedRange({ start, end });
       } else {
         setConflictDetected(false);
@@ -81,6 +119,45 @@ export default function ItemDetailPage({ setActiveScreen, selectedListingId }) {
 
   const rentalTotal = daysCount * listing.dailyPrice;
   const grandTotal = rentalTotal + listing.depositAmount;
+
+  const handleRequestBooking = () => {
+    if (conflictDetected) return;
+
+    const startDay = selectedRange.start || 18;
+    const endDay = selectedRange.end || selectedRange.start || 20;
+    const bookingId = `BK-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const borrowData = {
+      id: bookingId,
+      itemTitle: listing.title,
+      itemId: listing.id,
+      image: listing.image,
+      category: listing.category,
+      lenderName: listing.owner.name,
+      lenderAvatar: listing.owner.avatar,
+      dates: `Oct ${startDay} — Oct ${endDay}, 2026`,
+      dailyPrice: listing.dailyPrice,
+      depositHeld: listing.depositAmount,
+      totalCost: grandTotal,
+      status: 'RESERVED_IN_ESCROW',
+      lifecycleStep: 3,
+      depositState: 'HELD_IN_ESCROW',
+      borrower: CURRENT_USER.name,
+      borrowerSub: 'Verified Member (COMSATS)',
+      range: {
+        startDate: `2026-10-${String(startDay).padStart(2, '0')}`,
+        endDate: `2026-10-${String(endDay).padStart(2, '0')}`
+      }
+    };
+
+    if (onBorrowItem) {
+      onBorrowItem(borrowData);
+    }
+    if (setActiveBooking) {
+      setActiveBooking(borrowData);
+    }
+    setActiveScreen('booking-lifecycle');
+  };
 
   return (
     <div className="item-detail-container">
@@ -318,7 +395,7 @@ export default function ItemDetailPage({ setActiveScreen, selectedListingId }) {
             <button
               className={`clay-button-primary booking-submit-cta ${conflictDetected ? 'btn-disabled' : ''}`}
               disabled={conflictDetected}
-              onClick={() => setActiveScreen('booking-lifecycle')}
+              onClick={handleRequestBooking}
             >
               <ShieldCheck size={18} />
               <span>

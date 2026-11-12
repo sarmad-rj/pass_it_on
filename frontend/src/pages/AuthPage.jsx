@@ -9,12 +9,10 @@ import {
   EyeOff, 
   CheckCircle2, 
   Sparkles, 
-  KeyRound, 
-  ShieldAlert 
 } from 'lucide-react';
 
-export default function AuthPage({ setActiveScreen, setRole }) {
-  const [isSignUp, setIsSignUp] = useState(false);
+export default function AuthPage({ setActiveScreen, setRole, initialSignUp = false }) {
+  const [isSignUp, setIsSignUp] = useState(initialSignUp);
   const [selectedRole, setSelectedRole] = useState('both'); // borrower, lender, both, admin
   const [showPassword, setShowPassword] = useState(false);
   
@@ -50,6 +48,7 @@ export default function AuthPage({ setActiveScreen, setRole }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (setRole) setRole(selectedRole);
     if (selectedRole === 'admin') {
       setActiveScreen('admin');
     } else {
